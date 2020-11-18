@@ -41,14 +41,14 @@ router.post('/login', (req,res) => {
            username,
            designation: 'banker' 
         }).then((response) =>{
+            const user = response[0]
             if(response.length === 0){
                return res.status(404).send({error: 'User not found'})
             }
-            const validPassword = bcrypt.compareSync(password, user[0].password)
+            const validPassword = bcrypt.compareSync(password, user.password)
             if(!validPassword){
                return res.status(401).send({error: 'Invalid Password'})
             } 
-            const user = response[0]
             const payload = {
                 id: user.id,
                 username: user.username,
@@ -65,6 +65,14 @@ router.post('/login', (req,res) => {
      
 })
 
+router.get('/currentuser', [ auth, isBanker ], async (req, res) =>{
+    try {
+       return res.status(200).send(req.user)
+    } catch (error) {
+       return res.status(500).send(error)
+    }
+})
+
 router.get('/allcustomer', [ auth, isBanker ], async (req, res) =>{
     try {
         const users = await knex.column('id','username','balance','created_at').from('users').where('designation', 'customer')
@@ -76,20 +84,19 @@ router.get('/allcustomer', [ auth, isBanker ], async (req, res) =>{
 
 router.get('/totalbalance', [ auth, isBanker ], async (req,res) =>{
     try {
-        const totalAmount = await knex('users').where('designation', 'customer').sum('balance')
-        
+        const totalAmount = await knex('users').sum({totalsum:'balance'})
+      
        return res.status(200).json(totalAmount[0])
     } catch (error) {
         res.status(500).send(error)
     }
 })
 
-router.get('/usertrans',  [ auth, isBanker ], async (req, res) =>{
+router.post('/usertrans',  [ auth, isBanker ], async (req, res) =>{
     const { userid } = req.body
-
     try {
         const user = await knex('accounts').where('userid', userid)
-        return res.status(200).json(user) 
+        return res.status(200).send(user) 
     } catch (error) {
         return res.status(500).send(error)
     }

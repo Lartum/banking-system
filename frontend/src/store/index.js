@@ -58,9 +58,9 @@ export default createStore({
     commit('current_user', token, user)
   },
 
-  register({commit}, user){
+  register({commit}, userdata){
       commit('auth_request')
-      axios({url: `${user.route}/register`, data: user, method: 'POST' })
+      axios({url: `${userdata.route}/register`, data: userdata, method: 'POST' })
       .then(resp => {
         console.log(resp)
           const token = resp.data.token
@@ -68,7 +68,7 @@ export default createStore({
           localStorage.setItem('token', token)
           axios.defaults.headers.common['Authorization'] = token
           commit('auth_success', token, user)
-          router.push('/login')
+          router.push(`${userdata.route}`)
       }).catch((err) =>{
         console.log(err)
         commit('auth_error')

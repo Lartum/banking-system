@@ -11,6 +11,7 @@ import Record from "../views/Record.vue"
 
 import Allusers from "../views/Allusers.vue"
 import Bankerboard from '../views/Bankerboard.vue'
+import UserRecord from '../views/UserRecord.vue'
 
 const routes = [
   {
@@ -75,6 +76,15 @@ const routes = [
     path: "/allusers",
     name: "Allusers",
     component: Allusers,
+    meta: {
+      requiresAuth: true,
+      isBanker: true
+    }
+  },
+  {
+    path: "/userrecord",
+    name: "Userrecord",
+    component: UserRecord,
     meta: {
       requiresAuth: true,
       isBanker: true
