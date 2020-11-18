@@ -4,16 +4,18 @@
     <form @submit.prevent='login'>
         <input 
         v-model="username"
+        required
         type="text"
         placeholder="username"
         />
         <input 
         v-model="password"
+        required
         placeholder="password"
         type="password"
         />
         <label>Login as</label>
-        <select v-model="route" >
+        <select v-model="route" required>
           <option value="customers">Customer</option>
           <option value="bankers">Banker</option>
         </select>
