@@ -69,6 +69,11 @@ router.post('/login', (req,res) => {
      
 })
 
+router.get('/currentuser', [auth, isUser], (req,res) =>{
+    delete req.user.password
+    return res.status(200).send(req.user)
+})
+
 router.route('/account')
         .get([auth, isUser] , (req, res) => {
             const user = req.user
@@ -79,7 +84,7 @@ router.route('/account')
     })
 }).post([auth, isUser], (req, res) =>{
     const user = req.user
-    const { balance } = req.query
+    const { balance } = req.body
     knex('accounts')
         .insert({
             userid: user.id,
@@ -95,20 +100,22 @@ router.route('/account')
 
 router.patch('/transaction', [auth, isUser] , (req, res) => {
     const user = req.user
-    const { type, amount } = req.query
-    
+    const { type, amount } = req.body
     knex('accounts')
         .where('userid', user.id)
         .orderBy('created_at', 'desc')
         .limit(1)
         .then((latestRow) =>{
-                    if(parseFloat(amount) > parseFloat(latestRow[0].balance)){
+                if(latestRow.length !== 0){
+                    const currentbalance = latestRow[0].balance
+                    if(parseFloat(amount) > parseFloat(currentbalance)){
                         return res.status(403).send({ error: 'Insufficient Funds' })
                     }
                     knex('accounts')
                     .insert({
                             userid: user.id,
-                            balance: updateBalance(type, parseFloat(latestRow[0].balance), parseFloat(amount), user.id),
+                            amount: amount,
+                            balance:updateBalance(type, currentbalance, parseFloat(amount), user.id),
                             typeof_trans: type
                         })
                         
@@ -118,8 +125,22 @@ router.patch('/transaction', [auth, isUser] , (req, res) => {
                         }
                     }).catch((err) =>{
                         return res.status(500).send({error: err})
-                    })  
-
+                    }) 
+                } else {
+                     knex('accounts')
+                        .insert({
+                        userid: user.id,
+                        amount: amount,
+                        balance:updateBalance(type, 0 , parseFloat(amount), user.id), 
+                        typeof_trans: type
+                    }).then((response) =>{
+                        if(response.length !==0){           
+                            return res.status(200).send({message:`successfully ${type}ed amount`})
+                        }
+                    })
+            
+                }
+                 
             })
 })
 

@@ -9,6 +9,7 @@ try {
       table.increments('id').primary()
       table.integer('userid', 10)
       table.float('balance', 255)
+      table.float('amount', 255)
       table.string('typeof_trans', 10)
       table.timestamps(true, true)
     })

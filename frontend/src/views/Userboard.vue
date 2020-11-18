@@ -10,18 +10,23 @@
 </template>
 
 <script>
-import user from '../utils/currentuser'
 import store from '../store/index'
-
-const newUsername = user.username
-const newBalance = user.balance
+import axios from 'axios'
 
 export default {
     data(){
         return{
-            username: newUsername,
-            balance: newBalance
+            username: '',
+            balance:0
         }
+    },
+    created(){
+        axios.get('/customers/currentuser')
+        .then((res) =>{
+            const user = res.data
+            this.username = user.username
+            this.balance = user.balance
+        })
     },
     methods:{
         logout(){

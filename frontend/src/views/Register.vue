@@ -1,6 +1,7 @@
     <template>
   <div>
-    <h4>Register</h4>
+    <h4>Register | <router-link to="/login">Login</router-link></h4>
+    
     <form @submit.prevent="register">
       <label for="username">Username</label>
       <div>

@@ -10,7 +10,7 @@ const updateBalance = (type, balance, amount, userid) => {
         case 'debit':
             const debitedBalance = balance - amount
             updateuser(userid, debitedBalance)
-            return debitedBalance 
+            return debitedBalance
                
         default:
             return 'Invalid Operation'
