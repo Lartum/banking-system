@@ -14,7 +14,17 @@ router.post('/register', checkDuplicateUsername, (req, res) =>{
         designation: 'customer'
        }).then((response) => {
            if(response.length !== 0){
-            return res.status(201).send({ message: 'User Created Succcessfully' })
+            const user = response[0]   
+            const payload = {
+                id:user.id, 
+                username:user.username, 
+                balance: user.balance,
+                designation: user.designation 
+            }
+            const token = jwt.sign(payload , process.env.JWT_SECRET, {
+                expiresIn: 86400
+            })   
+            return res.status(201).send(token)
            }
            
        }).catch((err) =>{
@@ -24,22 +34,29 @@ router.post('/register', checkDuplicateUsername, (req, res) =>{
 
 router.post('/login', (req,res) => {
     const { username, password } = req.body
-
     if(!username || !password){
         return res.status(400).send({ error: 'Fields cannot be empty' })
     }
      knex('users').where({
            username,
            designation: 'customer' 
-        }).then((user) =>{
-            if(user.length === 0){
+        }).then((response) =>{
+            if(response.length === 0){
                return res.status(404).send({error: 'User not found'})
             }
-            const validPassword = bcrypt.compareSync(password, user[0].password)
+            const user = response[0]
+            const validPassword = bcrypt.compareSync(password, user.password)
             if(!validPassword){
                return res.status(401).send({error: 'Invalid Password'})
             }
-           const token = jwt.sign({ id: user[0].id }, process.env.JWT_SECRET, {
+           const payload = {
+                id: user.id,
+                username: user.username,
+                balance: user.balance,
+                designation: user.designation
+           } 
+
+           const token = jwt.sign(payload, process.env.JWT_SECRET, {
                 expiresIn: 86400
             })
            return res.status(200).send({

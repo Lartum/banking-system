@@ -14,7 +14,17 @@ router.post('/register', checkDuplicateBankername, ( req, res) =>{
         designation: 'banker'
        }).then((response) => {
            if(response.length !== 0){
-           return res.status(201).send({message: 'Banker Created Successfully'})
+            delete response[0].password
+            const user = response[0] 
+            const payload = {
+                id:user.id, 
+                username: user.username, 
+                designation: user.designation 
+            }   
+            const token = jwt.sign({ payload }, process.env.JWT_SECRET, {
+                expiresIn: 86400
+            })
+           return res.status(201).send(token)
            } 
        }).catch((err) =>{
            res.status(500).send(err)
@@ -30,15 +40,21 @@ router.post('/login', (req,res) => {
      knex('users').where({
            username,
            designation: 'banker' 
-        }).then((user) =>{
-            if(user.length === 0){
+        }).then((response) =>{
+            if(response.length === 0){
                return res.status(404).send({error: 'User not found'})
             }
             const validPassword = bcrypt.compareSync(password, user[0].password)
             if(!validPassword){
                return res.status(401).send({error: 'Invalid Password'})
-            }
-           const token = jwt.sign({ id: user[0].id }, process.env.JWT_SECRET, {
+            } 
+            const user = response[0]
+            const payload = {
+                id: user.id,
+                username: user.username,
+                designation: user.designation
+            } 
+            const token = jwt.sign(payload , process.env.JWT_SECRET, {
                 expiresIn: 86400
             })
            return res.status(200).send({
