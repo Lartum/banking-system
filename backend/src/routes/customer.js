@@ -8,25 +8,27 @@ const { checkDuplicateUsername } = require('../middleware/verifySignup')
 const {  updateBalance } = require('../utils/customerFunctions')
 
 router.post('/register', checkDuplicateUsername, (req, res) =>{
+    const { username, password } = req.body
     knex('users').insert({
-        username: req.body.username,
-        password: bcrypt.hashSync(req.body.password, 8),
+        username: username,
+        password: bcrypt.hashSync(password, 8),
         designation: 'customer'
        }).then((response) => {
            if(response.length !== 0){
             const user = response[0]   
             const payload = {
-                id:user.id, 
-                username:user.username, 
-                balance: user.balance,
-                designation: user.designation 
-            }
-            const token = jwt.sign(payload , process.env.JWT_SECRET, {
+                id: user,
+                username: username,
+                designation: 'customer'
+           } 
+
+           const token = jwt.sign(payload, process.env.JWT_SECRET, {
                 expiresIn: 86400
-            })   
-            return res.status(201).send(token)
-           }
-           
+            })
+           return res.status(200).send({
+                token
+            })
+        }  
        }).catch((err) =>{
            res.status(500).send(err)
        })

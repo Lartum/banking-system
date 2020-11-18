@@ -27,10 +27,10 @@ const checkDuplicateBankername = async ( req, res, next ) =>{
         designation: 'banker'
      } )
     if(banker.length !==0){
-        res.status(400).json({
+        return res.status(400).send({
             error:'Banker already exists'
         })
-        return
+        
     }
     next()
 }

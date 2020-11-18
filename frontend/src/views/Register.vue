@@ -28,26 +28,24 @@
 </template>
 
 <script>
+import store from '../store/index'
   export default {
     data(){
       return {
         username : "",
         password : "",
         password_confirmation : "",
-        route: ""
+        route: "",
+        error:''
       }
     },
     methods: {
       register: function () {
-        let data = {
-          username: this.username,
-          email: this.email,
-          password: this.password,
-          route: this.route
-        }
-        this.$store.dispatch('register', data)
-       .then(() => this.$router.push('/login'))
-       .catch(err => console.log(err))
+        let username = this.username
+        let password = this.password
+        let route = this.route
+        
+       store.dispatch('register', { username, password, route})
       }
     }
   }

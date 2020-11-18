@@ -7,7 +7,7 @@ module.exports = async () =>{
     if(!response){
       await knex.schema.createTable('users', (table) => {
           table.increments('id').primary()
-          table.string('username', 100).unique()
+          table.string('username', 100)
           table.string('password', 100)
           table.float('balance', 100)
           table.string('designation', 10)

@@ -13,11 +13,14 @@
 import user from '../utils/currentuser'
 import store from '../store/index'
 
+const newUsername = user.username
+const newBalance = user.balance
+
 export default {
     data(){
         return{
-            username: user.username,
-            balance: user.balance
+            username: newUsername,
+            balance: newBalance
         }
     },
     methods:{

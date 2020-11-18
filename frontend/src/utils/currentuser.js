@@ -1,9 +1,6 @@
 import jwt_decode from 'jwt-decode'
 
-const token = localStorage.getItem('token') ? localStorage.getItem('token') : null
-var user
-if(token){
-   user = jwt_decode(token)
-}
+const user = localStorage.getItem('token') ? jwt_decode(localStorage.getItem('token')) : null
+
 
 export default user
