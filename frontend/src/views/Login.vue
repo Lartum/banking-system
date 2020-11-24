@@ -22,6 +22,9 @@
         <button 
         type="submit"
         >Login</button>
+        <div v-if="error">
+          <p style="color:red">{{error}}</p>
+        </div>
     </form>
     <div>
       <router-link to="/register">Create Account</router-link>
@@ -30,9 +33,8 @@
 </template>
 
 <script>
-
-import router from '../router/index'
 import store from '../store/index'
+import router from '../router/index'
 
 
 export default {
@@ -40,7 +42,8 @@ export default {
       return{
         username:'',
         password:'',
-        route:''
+        route:'',
+        error:null
       }
     },
     methods: {
@@ -48,7 +51,10 @@ export default {
         let username = this.username
         let password = this.password
         let route = this.route
-        store.dispatch('login', { username, password, route } )
+        this.$store.dispatch('login', { username, password, route })
+        if(store.state.user === null){
+             this.error = 'User not found'
+          }
       }
     }
 }

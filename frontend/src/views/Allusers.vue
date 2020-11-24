@@ -10,8 +10,8 @@
                 <th>Account Created On</th>
                 <th>Show Transaction History</th>
             </tr>
-            <button v-if="showRecord === true" @click="closeRecord">Close</button>
-            <div v-if="showRecord === true"><UserRecord :customer="selectedUser" :records="customerRecord"/></div>
+           
+            
             <tr v-for="customer in customers" :key="customer.id">
                   <td>{{customer.id}}</td>
                   <td>{{customer.username}}</td>
@@ -20,6 +20,10 @@
                   <td><button @click="selectUser(customer)">Transaction History</button></td>  
             </tr>
         </table>
+        <button v-if="showRecord === true" @click="closeRecord">Close</button>
+        <div v-if="showRecord === true">
+                <UserRecord :customer="selectedUser" :records="customerRecord"/>
+        </div>
     </div>
 </template>
 

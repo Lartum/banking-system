@@ -16,7 +16,7 @@
       <div>
           <input id="password-confirm" type="password" v-model="password_confirmation" required>
       </div>
-      <label>Reister as</label>
+      <label>Register as</label>
         <select v-model="route" required>
             <option value="customers">Customer</option>
             <option value="bankers">Banker</option>

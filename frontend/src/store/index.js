@@ -7,7 +7,8 @@ export default createStore({
   state: {
     status: '',
     token: localStorage.getItem('token') ? localStorage.getItem('token') : '',
-    user : {}
+    user : null
+  
   },
   
   mutations: {
@@ -19,8 +20,9 @@ export default createStore({
       state.token = token
       state.user = user
     },
-    auth_error(state){
-      state.status = 'error'
+    auth_error(state, message){
+      state.status = 'error',
+      state.error = message
     },
     logout(state){
       state.status = ''
@@ -35,9 +37,9 @@ export default createStore({
   actions: {
     login({commit} , userdata ){
         commit('auth_request')
-        axios({url: `${userdata.route}/login`, data: userdata, method: 'POST' })
-        .then(resp => {
-          const token = resp.data.token
+        axios.post(`${userdata.route}/login`, userdata)
+        .then((res) => {
+          const token = res.data.token
           const user = jwt_decode(token)
           localStorage.setItem('token', token)
           axios.defaults.headers.common['Authorization'] = token
@@ -45,9 +47,8 @@ export default createStore({
           router.push(`/${userdata.route}`)
         })
         .catch(err => {
-          commit('auth_error')
+          commit('auth_error', err.message)
           localStorage.removeItem('token')
-          reject(err)
         })
       
   },
@@ -64,14 +65,15 @@ export default createStore({
       .then(resp => {
         console.log(resp)
           const token = resp.data.token
-          const user = jwt_decode(token)
+          // const user = jwt_decode(token)
           localStorage.setItem('token', token)
           axios.defaults.headers.common['Authorization'] = token
-          commit('auth_success', token, user)
+          commit('auth_success', token)
           router.push(`${userdata.route}`)
       }).catch((err) =>{
-        console.log(err)
-        commit('auth_error')
+        
+       
+        commit('auth_error', message)
         localStorage.removeItem('token')
       })
       

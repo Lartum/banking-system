@@ -23,7 +23,7 @@ const updateuser = (userid, value) => {
     .update('balance', value)
     .then((response) =>{
         if(response.length !== 0){
-            console.log('Updated user successfully')
+           return
         }
     }).catch((err) =>{
         return err
